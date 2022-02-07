@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     // Elevation is android only property for shadow effect
     elevation: 10,
-    padding: 20,
+    padding: 5,
     borderRadius: 5,
   },
 });

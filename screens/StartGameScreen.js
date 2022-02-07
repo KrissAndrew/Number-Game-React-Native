@@ -6,13 +6,15 @@ import {
   Button,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
 
 import Card from "../components/Card";
+import ChosenNumber from "../components/ChosenNumber";
 import Input from "../components/Input";
 import Colors from "../constants/Colors";
 
-const StartGameScreen = () => {
+const StartGameScreen = (props) => {
   const [enteredValue, setEnteredValue] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState("");
@@ -30,22 +32,33 @@ const StartGameScreen = () => {
 
   const confirmHandler = () => {
     const enteredNumber = parseInt(enteredValue);
-    if (enteredNumber === NaN || enteredNumber <= 0 || enteredNumber > 99) {
-      setConfirmed(false);
-      console.log(confirmed);
+    if (isNaN(enteredNumber) || enteredNumber <= 0 || enteredNumber > 99) {
+      Alert.alert("Invalid Number!", "Number must be between 1 & 99.", [
+        { text: "Okay", style: "destructive", onPress: resetHandler },
+      ]);
       return;
     }
     setSelectedNumber(enteredNumber);
     setConfirmed(true);
     setEnteredValue("");
-    console.log(enteredNumber);
-    console.log(confirmed);
+    Keyboard.dismiss();
   };
 
+  // card holding items to confirm number and start game
   let confirmedOutput;
 
   if (confirmed) {
-    confirmedOutput = <Text>Chosen Number : {selectedNumber}</Text>;
+    confirmedOutput = (
+      <Card style={styles.StartContainer}>
+        <Text>Chosen Number</Text>
+        <ChosenNumber>{selectedNumber}</ChosenNumber>
+        <Button
+          color={Colors.accent}
+          onPress={() => props.onStartGame(selectedNumber)}
+          title="Start Game"
+        ></Button>
+      </Card>
+    );
   }
 
   // wrapping area in Touchable... allows us to attach a function with the Keyboard API to close the keyboard
@@ -57,6 +70,7 @@ const StartGameScreen = () => {
     >
       <View style={styles.Screen}>
         <Text style={styles.Title}>Start a New Game!</Text>
+
         <Card style={styles.InputContainer}>
           <Text>Select a Number</Text>
           <Input
@@ -66,7 +80,9 @@ const StartGameScreen = () => {
             maxLength={2}
             onChangeText={numberInputHandler}
             value={enteredValue}
+            onSubmitEditing={confirmHandler}
           />
+
           <View style={styles.BtnContainer}>
             <View style={styles.Btn}>
               <Button
@@ -84,6 +100,7 @@ const StartGameScreen = () => {
             </View>
           </View>
         </Card>
+
         {confirmedOutput}
       </View>
     </TouchableWithoutFeedback>
@@ -104,15 +121,26 @@ const styles = StyleSheet.create({
     width: 300,
     maxWidth: "80%",
     alignItems: "center",
+    padding: 20,
   },
   BtnContainer: {
     flexDirection: "row",
     width: "100%",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     paddingHorizontal: 15,
   },
-  Btn: { width: 100 },
-  Input: { width: 50, textAlign: "center" },
+  Btn: {
+    width: 90,
+  },
+  Input: {
+    width: 50,
+    textAlign: "center",
+  },
+  StartContainer: {
+    marginTop: 20,
+    padding: 10,
+    alignItems: "center",
+  },
 });
 
 export default StartGameScreen;
