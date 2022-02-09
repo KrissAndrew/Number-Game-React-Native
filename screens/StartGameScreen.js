@@ -12,7 +12,10 @@ import {
 import Card from "../components/Card";
 import ChosenNumber from "../components/ChosenNumber";
 import Input from "../components/Input";
+
 import Colors from "../constants/Colors";
+import BodyText from "../components/BodyText";
+import TitleText from "../components/TitleText";
 
 const StartGameScreen = (props) => {
   const [enteredValue, setEnteredValue] = useState("");
@@ -61,7 +64,7 @@ const StartGameScreen = (props) => {
     );
   }
 
-  // wrapping area in Touchable... allows us to attach a function with the Keyboard API to close the keyboard
+  // wrapping area in Touchable... allows us to attach a function with the Keyboard API to close the keyboard - similar to closing a modal
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -69,10 +72,10 @@ const StartGameScreen = (props) => {
       }}
     >
       <View style={styles.Screen}>
-        <Text style={styles.Title}>Start a New Game!</Text>
+        <TitleText style={styles.Title}>Start a New Game!</TitleText>
 
         <Card style={styles.InputContainer}>
-          <Text>Select a Number</Text>
+          <BodyText>Select a Number</BodyText>
           <Input
             style={styles.Input}
             keyboardType="number-pad"
@@ -116,7 +119,6 @@ const styles = StyleSheet.create({
   Title: {
     fontSize: 20,
     marginVertical: 10,
-    fontFamily: "open-sans-bold",
   },
   InputContainer: {
     width: 300,

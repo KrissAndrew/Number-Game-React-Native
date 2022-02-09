@@ -10,31 +10,32 @@ import StartGameScreen from "./screens/StartGameScreen";
 import GameScreen from "./screens/GameScreen";
 import GameOverScreen from "./screens/GameOverScreen";
 
-// configure fonts, we set a key (ex 'open-sans') and the file path
-// keys can be used with "fontFamily: 'KEY'" in stylesheet
-// NOTE: custom fonts cannot have fontWeight altered, you need to download a seperate bold font
-const fetchFonts = () => {
-  Font.loadAsync({
-    "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
-    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
-  });
-};
-
 export default function App() {
   const [userNumber, setUserNumber] = useState();
   const [guessRounds, setGuessRounds] = useState(0);
 
   // state for loading fonts
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [fontLoaded, setFontLoaded] = useState(false);
+
+  // configure fonts, we set a key (ex 'open-sans') and the file path
+  // keys can be used with "fontFamily: 'KEY'" in stylesheet
+  // NOTE: custom fonts cannot have fontWeight altered, you need to download a seperate bold font
+  const fetchFonts = async () => {
+    await Font.loadAsync({
+      "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
+      "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
+    });
+    setFontLoaded(true);
+  };
 
   // fonts have a slight load time (milliseconds) however it is noticable
   // use <Apploading> with state to load app once fonts have loaded
-  if (!dataLoaded) {
+  if (!fontLoaded) {
     return (
       <AppLoading
         startAsync={fetchFonts}
         onFinish={() => {
-          setDataLoaded(true);
+          setFontLoaded(true);
         }}
         onError={(err) => {
           console.log(err);
