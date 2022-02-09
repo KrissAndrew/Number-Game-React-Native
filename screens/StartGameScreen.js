@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   Title: {
     fontSize: 20,
     marginVertical: 10,
+    fontFamily: "open-sans-bold",
   },
   InputContainer: {
     width: 300,

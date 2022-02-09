@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, Text, StyleSheet, Button, Alert } from "react-native";
 
 import Colors from "../constants/Colors";
@@ -20,15 +20,29 @@ const generateRandomBetween = (min, max, exclude) => {
 };
 
 const GameScreen = (props) => {
-  // random function generates a random guess
+  // generate a random guess and store
   const [currentGuess, setCurrentGuess] = useState(
     generateRandomBetween(1, 100, props.userChoice)
   );
+
+  // state to track number of rounds taken for game over screen
+  const [round, setRound] = useState(0);
 
   // useRef can be used to store a number between rerender cycles
   // here we use it to hold the low and high bounds
   const currentLow = useRef(1);
   const currentHigh = useRef(100);
+
+  // use array destructuring for useEffect
+  const { userChoice, onGameOver } = props;
+
+  // whenever the app re renders will check the win condition
+  // if met game over screen will replace screen content
+  useEffect(() => {
+    if (currentGuess === userChoice) {
+      onGameOver(round);
+    }
+  }, [currentGuess, userChoice, onGameOver]);
 
   const nextGuessHandler = (direction) => {
     // logic to catch out dishonest hints from user
@@ -56,8 +70,9 @@ const GameScreen = (props) => {
       currentHigh.current,
       currentGuess
     );
-    // change guess to new random
+    // change guess to new random & update rounds
     setCurrentGuess(nextNumber);
+    setRound((curRound) => curRound + 1);
   };
 
   return (
