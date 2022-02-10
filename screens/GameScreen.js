@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, Button, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
+
+// icons import - https://icons.expo.fyi/AntDesign/up
+import { AntDesign } from "@expo/vector-icons";
 
 import Colors from "../constants/Colors";
-
 import Card from "../components/Card";
 import ChosenNumber from "../components/ChosenNumber";
+import MainButton from "../components/MainButton";
 
 // exclude - players number to avoid instant game over
 const generateRandomBetween = (min, max, exclude) => {
@@ -80,16 +83,15 @@ const GameScreen = (props) => {
       <Text>Computer's Guess</Text>
       <ChosenNumber>{currentGuess}</ChosenNumber>
       <Card style={styles.BtnContainer}>
-        <Button
-          color={Colors.accent}
-          title="Lower"
-          onPress={nextGuessHandler.bind(this, "lower")}
-        ></Button>
-        <Button
-          color={Colors.primary}
-          title="Higher"
+        <MainButton onPress={nextGuessHandler.bind(this, "lower")}>
+          <AntDesign name="down" size={24} />
+        </MainButton>
+        <MainButton
+          style={styles.higher}
           onPress={nextGuessHandler.bind(this, "higher")}
-        ></Button>
+        >
+          <AntDesign name="up" size={24} />
+        </MainButton>
       </Card>
     </View>
   );
@@ -105,9 +107,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginTop: 20,
-    width: 300,
-    maxWidth: "80%",
+    width: 400,
+    maxWidth: "72%",
   },
+  higher: { backgroundColor: Colors.primary },
 });
 
 export default GameScreen;
