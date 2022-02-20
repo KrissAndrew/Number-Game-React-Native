@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, ScrollView } from "react-native";
 
 // icons import - https://icons.expo.fyi/AntDesign/up
 import { AntDesign } from "@expo/vector-icons";
@@ -8,13 +8,14 @@ import Colors from "../constants/Colors";
 import Card from "../components/Card";
 import ChosenNumber from "../components/ChosenNumber";
 import MainButton from "../components/MainButton";
+import BodyText from "../components/BodyText";
 
 // exclude - players number to avoid instant game over
 const generateRandomBetween = (min, max, exclude) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   const rndNum = Math.floor(Math.random() * (max - min)) + min;
-  // if the random guess === players number run again
+  // if (random guess === players guess) run again
   if (rndNum === exclude) {
     return generateRandomBetween(min, max, exclude);
   } else {
@@ -22,14 +23,21 @@ const generateRandomBetween = (min, max, exclude) => {
   }
 };
 
+// function to display guesses - keep JSX leaner
+const renderListItem = (value, numOfRound) => (
+  <View key={value} style={styles.listItem}>
+    <BodyText>#{numOfRound}</BodyText>
+    <BodyText>{value}</BodyText>
+  </View>
+);
+
 const GameScreen = (props) => {
+  const initialGuess = generateRandomBetween(1, 100, props.userChoice);
   // generate a random guess and store
-  const [currentGuess, setCurrentGuess] = useState(
-    generateRandomBetween(1, 100, props.userChoice)
-  );
+  const [currentGuess, setCurrentGuess] = useState(initialGuess);
 
   // state to track number of rounds taken for game over screen
-  const [round, setRound] = useState(0);
+  const [passedRounds, setPassedRounds] = useState([initialGuess]);
 
   // useRef can be used to store a number between rerender cycles
   // here we use it to hold the low and high bounds
@@ -43,7 +51,7 @@ const GameScreen = (props) => {
   // if met game over screen will replace screen content
   useEffect(() => {
     if (currentGuess === userChoice) {
-      onGameOver(round);
+      onGameOver(passedRounds.length);
     }
   }, [currentGuess, userChoice, onGameOver]);
 
@@ -65,7 +73,7 @@ const GameScreen = (props) => {
     }
     // if user indicates guess is high, current guess must be new lowest
     else {
-      currentLow.current = currentGuess;
+      currentLow.current = currentGuess + 1;
     }
     // generate new guess accounting for updated upper/lower bound
     const nextNumber = generateRandomBetween(
@@ -75,12 +83,13 @@ const GameScreen = (props) => {
     );
     // change guess to new random & update rounds
     setCurrentGuess(nextNumber);
-    setRound((curRound) => curRound + 1);
+    // setRound((curRound) => curRound + 1);
+    setPassedRounds((curPassedRounds) => [nextNumber, ...curPassedRounds]);
   };
 
   return (
     <View style={styles.Screen}>
-      <Text>Computer's Guess</Text>
+      <BodyText>Computer's Guess</BodyText>
       <ChosenNumber>{currentGuess}</ChosenNumber>
       <Card style={styles.BtnContainer}>
         <MainButton onPress={nextGuessHandler.bind(this, "lower")}>
@@ -93,6 +102,13 @@ const GameScreen = (props) => {
           <AntDesign name="up" size={24} />
         </MainButton>
       </Card>
+      <View style={styles.listContainer}>
+        <ScrollView contentContainerStyle={styles.list}>
+          {passedRounds.map((guess, index) =>
+            renderListItem(guess, passedRounds.length - index)
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 };
@@ -111,6 +127,27 @@ const styles = StyleSheet.create({
     maxWidth: "72%",
   },
   higher: { backgroundColor: Colors.primary },
+  listContainer: {
+    //flex 1 required for scroll to work on android
+    flex: 1,
+    width: "80%",
+  },
+  // use of flex grow here to have the list start at the bottom and stack up
+  list: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  listItem: {
+    backgroundColor: "white",
+    borderColor: "black",
+    borderWidth: 1,
+    padding: 15,
+    marginVertical: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "60%",
+  },
 });
 
 export default GameScreen;
