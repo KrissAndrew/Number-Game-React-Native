@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, Alert, ScrollView } from "react-native";
+import { View, StyleSheet, Alert, ScrollView, Dimensions } from "react-native";
 
 // icons import - https://icons.expo.fyi/AntDesign/up
 import { AntDesign } from "@expo/vector-icons";
@@ -8,6 +8,7 @@ import Colors from "../constants/Colors";
 import Card from "../components/Card";
 import ChosenNumber from "../components/ChosenNumber";
 import MainButton from "../components/MainButton";
+import TitleText from "../components/TitleText";
 import BodyText from "../components/BodyText";
 
 // exclude - players number to avoid instant game over
@@ -32,11 +33,11 @@ const renderListItem = (value, numOfRound) => (
 );
 
 const GameScreen = (props) => {
-  const initialGuess = generateRandomBetween(1, 100, props.userChoice);
   // generate a random guess and store
+  const initialGuess = generateRandomBetween(1, 100, props.userChoice);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
 
-  // state to track number of rounds taken for game over screen
+  // track number of rounds taken for game over screen
   const [passedRounds, setPassedRounds] = useState([initialGuess]);
 
   // useRef can be used to store a number between rerender cycles
@@ -66,7 +67,6 @@ const GameScreen = (props) => {
       ]);
       return;
     }
-    // logic for correct hint provided
     // if user indicated guess is lower, we set the current highest guess to the current number - as logically the current guess is the highest so far
     if (direction === "lower") {
       currentHigh.current = currentGuess;
@@ -89,7 +89,7 @@ const GameScreen = (props) => {
 
   return (
     <View style={styles.Screen}>
-      <BodyText>Computer's Guess</BodyText>
+      <TitleText>Computer's Guess</TitleText>
       <ChosenNumber>{currentGuess}</ChosenNumber>
       <Card style={styles.BtnContainer}>
         <MainButton onPress={nextGuessHandler.bind(this, "lower")}>
@@ -122,7 +122,8 @@ const styles = StyleSheet.create({
   BtnContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 20,
+    // alternative device sizing using dimensions
+    marginTop: Dimensions.get("window").height > 600 ? 20 : 10,
     width: 400,
     maxWidth: "72%",
   },
@@ -130,9 +131,9 @@ const styles = StyleSheet.create({
   listContainer: {
     //flex 1 required for scroll to work on android
     flex: 1,
-    width: "80%",
+    width: Dimensions.get("window").width > 350 ? "80%" : "100%",
   },
-  // use of flex grow here to have the list start at the bottom and stack up
+  // flex grow makes list start at the bottom and stack up
   list: {
     flexGrow: 1,
     alignItems: "center",

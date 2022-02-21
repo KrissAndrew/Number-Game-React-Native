@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  Dimensions,
 } from "react-native";
 
 import Card from "../components/Card";
@@ -120,8 +121,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   InputContainer: {
-    width: 300,
-    maxWidth: "80%",
+    // screen resizing - will take 80% of screen due to width
+    // however minimum is 300 pixel wide
+    // if device is tiny < 300 px max width 95% avoids screen cutoff
+    width: "80%",
+    maxWidth: "95%",
+    minWidth: 300,
     alignItems: "center",
     padding: 20,
   },
@@ -132,7 +137,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   Btn: {
-    width: 90,
+    // using dimensions dictates button size from window width
+    width: Dimensions.get("window").width / 3.5,
   },
   Input: {
     width: 50,
