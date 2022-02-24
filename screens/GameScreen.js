@@ -40,6 +40,22 @@ const GameScreen = (props) => {
   // track number of rounds taken for game over screen
   const [passedRounds, setPassedRounds] = useState([initialGuess]);
 
+  const [detectedDeviceWidth, setDetectedDeviceWidth] = useState(
+    Dimensions.get("window").width
+  );
+
+  const [detectedDeviceHeight, setDetectedDeviceHeight] = useState(
+    Dimensions.get("window").height
+  );
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setDetectedDeviceWidth(Dimensions.get("window").width);
+      setDetectedDeviceHeight(Dimensions.get("window").height);
+    };
+    const listener = Dimensions.addEventListener("change", updateLayout);
+    return listener?.remove();
+  });
   // useRef can be used to store a number between rerender cycles
   // here we use it to hold the low and high bounds
   const currentLow = useRef(1);
@@ -87,21 +103,42 @@ const GameScreen = (props) => {
     setPassedRounds((curPassedRounds) => [nextNumber, ...curPassedRounds]);
   };
 
-  return (
-    <View style={styles.Screen}>
-      <TitleText>Computer's Guess</TitleText>
-      <ChosenNumber>{currentGuess}</ChosenNumber>
-      <Card style={styles.BtnContainer}>
+  // change button style depending on window size
+  let content =
+    Dimensions.get("window").height < 500 ? (
+      <>
+        <ChosenNumber>{currentGuess}</ChosenNumber>
+        <Card style={styles.BtnContainer}>
+          <MainButton onPress={nextGuessHandler.bind(this, "lower")}>
+            <AntDesign name="down" size={24} />
+          </MainButton>
+          <MainButton
+            style={styles.higher}
+            onPress={nextGuessHandler.bind(this, "higher")}
+          >
+            <AntDesign name="up" size={24} />
+          </MainButton>
+        </Card>
+      </>
+    ) : (
+      <View style={styles.controls}>
         <MainButton onPress={nextGuessHandler.bind(this, "lower")}>
           <AntDesign name="down" size={24} />
         </MainButton>
+        <ChosenNumber>{currentGuess}</ChosenNumber>
         <MainButton
           style={styles.higher}
           onPress={nextGuessHandler.bind(this, "higher")}
         >
           <AntDesign name="up" size={24} />
         </MainButton>
-      </Card>
+      </View>
+    );
+
+  return (
+    <View style={styles.Screen}>
+      <TitleText>Computer's Guess</TitleText>
+      {content}
       <View style={styles.listContainer}>
         <ScrollView contentContainerStyle={styles.list}>
           {passedRounds.map((guess, index) =>
@@ -128,6 +165,12 @@ const styles = StyleSheet.create({
     maxWidth: "72%",
   },
   higher: { backgroundColor: Colors.primary },
+  controls: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    width: "80%",
+  },
   listContainer: {
     //flex 1 required for scroll to work on android
     flex: 1,

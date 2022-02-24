@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   Keyboard,
   Alert,
   Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 
 import Card from "../components/Card";
@@ -23,6 +25,18 @@ const StartGameScreen = (props) => {
   const [enteredValue, setEnteredValue] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState("");
+  const [buttonWidth, setButtonWidth] = useState(
+    Dimensions.get("window").width / 3.5
+  );
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setButtonWidth(Dimensions.get("window").width / 3.5);
+    };
+
+    const listener = Dimensions.addEventListener("change", updateLayout);
+    return () => listener?.remove();
+  });
 
   const numberInputHandler = (inputText) => {
     // replace anything that is not 0 or 9 as an empty string
@@ -66,47 +80,52 @@ const StartGameScreen = (props) => {
 
   // wrapping area in Touchable... allows us to attach a function with the Keyboard API to close the keyboard - similar to closing a modal
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-    >
-      <View style={styles.Screen}>
-        <TitleText style={styles.Title}>Start a New Game!</TitleText>
+    <ScrollView>
+      <KeyboardAvoidingView behavior="position">
+        <TouchableWithoutFeedback
+          onPress={() => {
+            Keyboard.dismiss();
+          }}
+        >
+          <View style={styles.Screen}>
+            <TitleText style={styles.Title}>Start a New Game!</TitleText>
 
-        <Card style={styles.InputContainer}>
-          <BodyText>Select a Number</BodyText>
-          <Input
-            style={styles.Input}
-            keyboardType="number-pad"
-            blurOnSubmit={true}
-            maxLength={2}
-            onChangeText={numberInputHandler}
-            value={enteredValue}
-            onSubmitEditing={confirmHandler}
-          />
+            <Card style={styles.InputContainer}>
+              <BodyText>Select a Number</BodyText>
+              <Input
+                style={styles.Input}
+                keyboardType="number-pad"
+                blurOnSubmit={true}
+                maxLength={2}
+                onChangeText={numberInputHandler}
+                value={enteredValue}
+                onSubmitEditing={confirmHandler}
+                disableFullscreenUI={true}
+              />
 
-          <View style={styles.BtnContainer}>
-            <View style={styles.Btn}>
-              <Button
-                color={Colors.primary}
-                onPress={confirmHandler}
-                title="Confirm"
-              ></Button>
-            </View>
-            <View style={styles.Btn}>
-              <Button
-                color={Colors.accent}
-                onPress={resetHandler}
-                title="Reset"
-              ></Button>
-            </View>
+              <View style={styles.BtnContainer}>
+                <View style={{ width: buttonWidth }}>
+                  <Button
+                    color={Colors.primary}
+                    onPress={confirmHandler}
+                    title="Confirm"
+                  ></Button>
+                </View>
+                <View style={{ width: buttonWidth }}>
+                  <Button
+                    color={Colors.accent}
+                    onPress={resetHandler}
+                    title="Reset"
+                  ></Button>
+                </View>
+              </View>
+            </Card>
+
+            {confirmedOutput}
           </View>
-        </Card>
-
-        {confirmedOutput}
-      </View>
-    </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
@@ -136,10 +155,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingHorizontal: 15,
   },
-  Btn: {
-    // using dimensions dictates button size from window width
-    width: Dimensions.get("window").width / 3.5,
-  },
+  // Btn: {
+  //   // this only applies when app starts
+  //   // so if starting in landscape buttons will be too big when back to portrait
+  //   // useState to solve this easily
+  //   width: Dimensions.get("window").width / 3.5,
+  // },
   Input: {
     width: 50,
     textAlign: "center",

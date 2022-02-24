@@ -29,6 +29,8 @@ const GameOverScreen = (props) => {
     plural = "s ";
   }
 
+  let imgMultiplyer = Dimensions.get("window".width) > 400 ? 0.3 : 0.4;
+
   return (
     <ScrollView>
       <View style={styles.Screen}>
@@ -85,6 +87,7 @@ const styles = StyleSheet.create({
   },
   BtnContainer: {
     marginTop: 10,
+    paddingBottom: 5,
   },
   resultContainer: {
     marginHorizontal: 30,
