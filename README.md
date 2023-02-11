@@ -1,7 +1,7 @@
-This is a number guessing application I am making as I complete my React Native course.
+This is a number guessing application I created using React Native.
 It takes a number input from the user and attempts to guess what it is based on user feedback.
 
-Note that this is not my original work and is a product of following along with Maximilian Schwartzmiller's
+Note that whilst this is my work the idea was taken from Maximilian Schwartzmiller's
 course "React Native - The Practical Guide" - https://www.udemy.com/course/react-native-the-practical-guide/
 
 # Simple Diagram of Gameplay Loop
